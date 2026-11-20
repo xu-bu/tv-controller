@@ -66,6 +66,9 @@ dotnet publish -c Release -p:Platform=x64 -p:EnableMsixTooling=true -p:PublishSi
 - 电视全局 HTTP 代理：`192.168.3.125:17890`，由本机 `node lan-proxy.js` 转发到 Clash Verge 的 `127.0.0.1:7890`。
 - 脚本位置：`C:\Users\64170\Documents\Qoder\2026-11-16\f37d96e9\tv-wake\lan-proxy.js`（另见同目录 `wake-tv.bat`、`yt\` 下的 APK 和截图）。
 - 代理进程不在时，ADB 仍正常，但 SmartTube 等应用没网。Clash Verge 自身 `allow-lan: false`，所以需要这个转发进程。
+- 自启：计划任务 `LanProxyForTV`（登录后延迟 20 秒，隐藏窗口，调用同目录 `start-lan-proxy.vbs`，失败自动重试 3 次）。转发器挂了 B 站也会一起断，因为全局代理对所有 App 生效。
+- Clash 必须保持 `rule` 模式，切到全局模式会让 B 站等国内流量也走节点。
+- 电视代理里写死 `192.168.3.125`，本机 IP 变动后自启也没用，建议路由器做 DHCP 保留。
 
 ## 投屏现状（未完成）
 
