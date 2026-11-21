@@ -9,6 +9,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -21,11 +23,11 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="16" Margin="0,12"
                     HorizontalAlignment="Center">
             <Button x:Name="WakeButton" Click="WakeButton_Click"
-                    AutomationProperties.Name="开机"
+                    AutomationProperties.Name="打开B站"
                     Width="170" Height="150" Style="{StaticResource AccentButtonStyle}">
                 <StackPanel Spacing="10">
                     <FontIcon Glyph="&#xE7E8;" FontSize="34" />
-                    <TextBlock Text="开机" FontSize="20" HorizontalAlignment="Center" />
+                    <TextBlock Text="打开B站" FontSize="20" HorizontalAlignment="Center" />
                 </StackPanel>
             </Button>
             <Button x:Name="SleepButton" Click="SleepButton_Click"
@@ -42,14 +44,62 @@
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12"
                     HorizontalAlignment="Center">
+            <Button x:Name="BackButton" Click="BackButton_Click"
+                    AutomationProperties.Name="返回"
+                    Width="150" Height="72">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <FontIcon Glyph="&#xE72B;" FontSize="22" VerticalAlignment="Center" />
+                    <TextBlock Text="返回" FontSize="16" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="HomeButton" Click="HomeButton_Click"
+                    AutomationProperties.Name="主页"
+                    Width="150" Height="72">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <FontIcon Glyph="&#xE80F;" FontSize="22" VerticalAlignment="Center" />
+                    <TextBlock Text="主页" FontSize="16" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="12"
+                    HorizontalAlignment="Center">
+            <Button x:Name="VolumeDownButton" Click="VolumeDownButton_Click"
+                    AutomationProperties.Name="音量减"
+                    Width="112" Height="62">
+                <StackPanel Spacing="4">
+                    <FontIcon Glyph="&#xE767;" FontSize="20" HorizontalAlignment="Center" />
+                    <TextBlock Text="音量 −" FontSize="14" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="MuteButton" Click="MuteButton_Click"
+                    AutomationProperties.Name="静音"
+                    Width="112" Height="62">
+                <StackPanel Spacing="4">
+                    <FontIcon Glyph="&#xE198;" FontSize="20" HorizontalAlignment="Center" />
+                    <TextBlock Text="静音" FontSize="14" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="VolumeUpButton" Click="VolumeUpButton_Click"
+                    AutomationProperties.Name="音量加"
+                    Width="112" Height="62">
+                <StackPanel Spacing="4">
+                    <FontIcon Glyph="&#xE767;" FontSize="20" HorizontalAlignment="Center" />
+                    <TextBlock Text="音量 +" FontSize="14" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="12"
+                    HorizontalAlignment="Center">
             <ProgressRing x:Name="BusyRing" Width="18" Height="18" IsActive="False" />
             <TextBlock x:Name="StatusText" Text="就绪" VerticalAlignment="Center" />
         </StackPanel>
 
-        <TextBlock Grid.Row="3" Text="操作日志" FontSize="12"
+        <TextBlock Grid.Row="5" Text="操作日志" FontSize="12"
                    Foreground="{ThemeResource TextFillColorSecondaryBrush}" Margin="0,4,0,0" />
 
-        <Border Grid.Row="4" CornerRadius="8" Padding="12"
+        <Border Grid.Row="6" CornerRadius="8" Padding="12"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderThickness="1"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}">

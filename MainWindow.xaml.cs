@@ -19,7 +19,7 @@ public sealed partial class MainWindow : Window
         Title = "电视遥控";
         SystemBackdrop = new MicaBackdrop();
         ApplyWindowIcon();
-        ResizeToDip(440, 600);
+        ResizeToDip(440, 750);
     }
 
     private void ApplyWindowIcon()
@@ -65,12 +65,37 @@ public sealed partial class MainWindow : Window
 
     private async void WakeButton_Click(object sender, RoutedEventArgs e)
     {
-        await RunAsync(() => _power.WakeAsync());
+        await RunAsync(() => _power.WakeAndOpenBilibiliAsync());
     }
 
     private async void SleepButton_Click(object sender, RoutedEventArgs e)
     {
         await RunAsync(() => _power.SleepAsync());
+    }
+
+    private async void BackButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RunAsync(() => _power.BackAsync());
+    }
+
+    private async void HomeButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RunAsync(() => _power.HomeAsync());
+    }
+
+    private async void VolumeUpButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RunAsync(() => _power.VolumeUpAsync());
+    }
+
+    private async void VolumeDownButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RunAsync(() => _power.VolumeDownAsync());
+    }
+
+    private async void MuteButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RunAsync(() => _power.ToggleMuteAsync());
     }
 
     private async Task RunAsync(Func<Task<string>> action)
@@ -95,6 +120,11 @@ public sealed partial class MainWindow : Window
     {
         WakeButton.IsEnabled = !busy;
         SleepButton.IsEnabled = !busy;
+        BackButton.IsEnabled = !busy;
+        HomeButton.IsEnabled = !busy;
+        VolumeUpButton.IsEnabled = !busy;
+        VolumeDownButton.IsEnabled = !busy;
+        MuteButton.IsEnabled = !busy;
         BusyRing.IsActive = busy;
         if (status is not null)
         {

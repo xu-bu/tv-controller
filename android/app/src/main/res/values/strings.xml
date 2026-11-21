@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">电视遥控</string>
+    <string name="subtitle">TCL 55G60E · 192.168.3.126</string>
+    <string name="btn_open_bili">打开B站</string>
+    <string name="btn_sleep">关机</string>
+    <string name="btn_sleep_hint">进入待机</string>
+    <string name="btn_back">返回</string>
+    <string name="btn_home">主页</string>
+    <string name="btn_volume_down">音量 −</string>
+    <string name="btn_mute">静音</string>
+    <string name="btn_volume_up">音量 +</string>
+    <string name="ready">就绪</string>
+    <string name="log_title">操作日志</string>
+</resources>

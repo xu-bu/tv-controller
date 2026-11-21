@@ -4,3 +4,14 @@ dist/
 publish-single/
 .vs/
 *.user
+
+# WorkBuddy
+.workbuddy/
+
+# Android
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
+android/.idea/
+*.iml

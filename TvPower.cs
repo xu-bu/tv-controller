@@ -8,6 +8,7 @@ public sealed class TvPower
 
     private const string StandbyMarker = "SoundBoxDefaultActivity";
     private const string PowerDialogMarker = "shutdowndialog";
+    private const string BilibiliPackage = "com.xiaodianshi.tv.yst";
 
     private static readonly string Adb = ResolveAdb();
     private readonly Action<string> _log;
@@ -80,10 +81,12 @@ public sealed class TvPower
         Log("发送电源键，打开电源菜单");
         await Run($"-s {Device} shell input keyevent 26", 5000);
 
+        // 电源菜单默认高亮「熄屏」，菜单一出现就立刻确认，跳过左右移动和多余等待，
+        // 让菜单只在屏幕上一闪而过。直接拉起待机 Activity 会被系统拒绝（not exported）。
         var dialogShown = false;
-        for (var i = 0; i < 6; i++)
+        for (var i = 0; i < 20; i++)
         {
-            await Task.Delay(700);
+            await Task.Delay(200);
             window = await WindowDumpAsync();
             if (window.Contains(PowerDialogMarker))
             {
@@ -98,15 +101,12 @@ public sealed class TvPower
             return "未能打开电源菜单，请查看电视屏幕";
         }
 
-        await Task.Delay(500);
-        Log("选中「熄屏」并确认");
-        await Run($"-s {Device} shell input keyevent 19", 5000);
-        await Task.Delay(300);
+        Log("确认「熄屏」");
         await Run($"-s {Device} shell input keyevent 66", 5000);
 
-        for (var i = 0; i < 6; i++)
+        for (var i = 0; i < 20; i++)
         {
-            await Task.Delay(2000);
+            await Task.Delay(400);
             window = await WindowDumpAsync();
             if (window.Contains(StandbyMarker))
             {
@@ -119,7 +119,7 @@ public sealed class TvPower
         {
             Log("电源菜单仍在，再确认一次");
             await Run($"-s {Device} shell input keyevent 66", 5000);
-            await Task.Delay(3000);
+            await Task.Delay(1500);
             window = await WindowDumpAsync();
             if (window.Contains(StandbyMarker))
             {
@@ -128,6 +128,82 @@ public sealed class TvPower
         }
 
         return "未能确认电视进入待机，请查看电视屏幕";
+    }
+
+    public async Task<string> WakeAndOpenBilibiliAsync()
+    {
+        Log("连接 " + Device);
+        await Run($"connect {Device}", 8000);
+
+        if (await IsOnlineAsync())
+        {
+            // 小程序待机下系统仍是 Awake、ADB 在线，直接拉起应用即可点亮屏幕，
+            // 无需按电源键再死等十几秒（那段时间电视早回到主页空转）。
+            return await LaunchBilibiliAsync();
+        }
+
+        Log("ADB 不在线，尝试电源键唤醒");
+        var wakeResult = await WakeAsync();
+        var launchResult = await LaunchBilibiliAsync();
+        return wakeResult + "；" + launchResult;
+    }
+
+    private async Task<string> LaunchBilibiliAsync()
+    {
+        Log("启动哔哩哔哩 " + BilibiliPackage);
+        await Run($"-s {Device} shell am start -n {BilibiliPackage}/.ui.main.MainActivity", 5000);
+
+        for (var i = 0; i < 10; i++)
+        {
+            await Task.Delay(300);
+            var dump = await WindowDumpAsync();
+            if (IsForeground(dump, BilibiliPackage))
+            {
+                return "已进入哔哩哔哩";
+            }
+        }
+
+        return "启动指令已发送，请查看电视屏幕";
+    }
+
+    public async Task<string> VolumeUpAsync()
+    {
+        return await SendNavigationKeyAsync(24, "音量+");
+    }
+
+    public async Task<string> VolumeDownAsync()
+    {
+        return await SendNavigationKeyAsync(25, "音量-");
+    }
+
+    public async Task<string> ToggleMuteAsync()
+    {
+        return await SendNavigationKeyAsync(113, "静音切换");
+    }
+
+    public async Task<string> BackAsync()
+    {
+        return await SendNavigationKeyAsync(4, "返回键");
+    }
+
+    public async Task<string> HomeAsync()
+    {
+        return await SendNavigationKeyAsync(3, "主页键");
+    }
+
+    private async Task<string> SendNavigationKeyAsync(int keyCode, string name)
+    {
+        Log("连接 " + Device);
+        await Run($"connect {Device}", 8000);
+
+        if (!await IsOnlineAsync())
+        {
+            throw new InvalidOperationException("无法连接电视，无法发送" + name + "。");
+        }
+
+        Log("发送" + name);
+        await Run($"-s {Device} shell input keyevent {keyCode}", 5000);
+        return name + "已发送";
     }
 
     private async Task<bool> IsOnlineAsync()
@@ -139,6 +215,18 @@ public sealed class TvPower
     private Task<string> WindowDumpAsync()
     {
         return Run($"-s {Device} shell dumpsys window", 15000);
+    }
+
+    private static bool IsForeground(string dump, string package)
+    {
+        foreach (var line in dump.Split('\n'))
+        {
+            if (line.Contains("mCurrentFocus") && line.Contains(package))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private async Task<string> Run(string args, int timeoutMs)
